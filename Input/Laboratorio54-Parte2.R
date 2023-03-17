@@ -1,0 +1,64 @@
+# Hecho con gusto por Leislie R. Manjarrez O.
+
+# Laboratorio 54- Parte 2- Grafico de series financieras en R
+
+# El paquete quantmod permite obtener, transformar y dibujar datos financieros de diversas fuentes. 
+# En el siguiente ejemplo vamos a descargar los datos del SP500 desde Yahoo Finance y dibujarlos con la funcion chartSeries, que crea por defecto lo que se conoce como grafico de velas japonesas.
+# Es posible transformar los datos diarios en velas semanales o mensuales con las funciones as.weekly y as.monthly
+
+# Instalamos la paqueteria correspondiente
+install.packages("quantmod")
+
+# Llamamos a la libreria correspondiente
+library(quantmod)
+
+# Creamos los objetos de fechas
+inicio <- "2020-10-01"
+fin <- "2021-01-01"
+
+# Obtenemos los datos
+getSymbols("^GSPC", 
+           from = inicio, to = fin,
+           src = "yahoo") 
+
+# Dibujamos la serie
+chartSeries(GSPC)
+
+# Es posible cambiar el tema y los estilos. Para ver las opciones que existen ejecuta el siguiente comando
+?chartSeries
+
+# Para personalizar el grafo utilizamos el argumento theme; para alto-bajo-cierre bar.type; para vela alza up.col
+# y para vela baja dn.col
+chartSeries(GSPC,
+theme = chartTheme("white"), 
+bar.type = "hlc",    
+up.col = "green",  
+dn.col = "pink")   
+
+# Para agregar indicadores tecnicos al grafico, como bandas de Bollinger o medias moviles exponenciales, utilizamos las funciones que inician con add
+chartSeries(GSPC,
+            theme = chartTheme("white"),
+            name = "SP500",  
+            TA = list("addBBands(n = 10)",
+                      "addVo()",
+                      "addEMA(20)",
+                      "addEMA(10, col = 2)"))
+
+# La funcion chart_Series son algunas de las funciones experimentales existentes en la libreria quantmod
+chart_Series(GSPC)
+
+# El tema del grafico se puede personalizar con la lista de argumentos que proporciona chart_theme
+myTheme <- chart_theme()
+myTheme$col$dn.col <- "pink"
+  myTheme$col$dn.border <- "pink"
+    myTheme$col$up.col <- "green"
+      myTheme$col$up.border <- "green"
+        myTheme$rylab <- TRUE
+        myTheme$lylab <- FALSE
+        chart_Series(GSPC, theme = myTheme)
+        
+# Es puedes agregar indicadores tecnicos de la misma manera que en la funcion de la seccion anterior
+chart_Series(GSPC, TA = list("add_EMA(n = 20, col = 4,
+                                lwd = 2)",
+                               "add_EMA(n = 5, col = 2,
+                                lwd = 2)"))
